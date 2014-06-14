@@ -102,7 +102,8 @@ class vec
   {
     logger::debug( module_name, 'vec :: add( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
-    $r = array_map( function( $a, $b ){ return $a + $b; }, $a -> _values, $b -> _values );
+    $r = new vec;
+    $r -> _values = array_map( function( $a, $b ){ return $a + $b; }, $a -> _values, $b -> _values );
     logger::debug( module_name, 'vec :: add return: ' . $r );
     return $r;
   }
@@ -111,7 +112,8 @@ class vec
   {
     logger::debug( module_name, 'vec :: sub( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
-    $r = array_map( function( $a, $b ){ return $a - $b; }, $a -> _values, $b -> _values );
+    $r = new vec;
+    $r -> _values = array_map( function( $a, $b ){ return $a - $b; }, $a -> _values, $b -> _values );
     logger::debug( module_name, 'vec :: sub return: ' . $r );
     return $r;
   }
@@ -120,7 +122,8 @@ class vec
   {
     logger::debug( module_name, 'vec :: mul( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
-    $r = array_map( function( $a, $b ){ return $a * $b; }, $a -> _values, $b -> _values );
+    $r = new vec;
+    $r -> _values = array_map( function( $a, $b ){ return $a * $b; }, $a -> _values, $b -> _values );
     logger::debug( module_name, 'vec :: mul return: ' . $r );
     return $r;
   }
@@ -129,7 +132,8 @@ class vec
   {
     logger::debug( module_name, 'vec :: div( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
-    $r = array_map( function( $a, $b ){ return $a / $b; }, $a -> _values, $b -> _values );
+    $r = new vec;
+    $r -> _values = array_map( function( $a, $b ){ return $a / $b; }, $a -> _values, $b -> _values );
     logger::debug( module_name, 'vec :: div return: ' . $r );
     return $r;
   }
@@ -150,9 +154,9 @@ class vec
     logger::debug( module_name, 'vec :: distance( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $d = self::sub( $a, $b );
-    $n = self::norm( $a );
-    logger::debug( module_name, 'vec :: distance return: ' . $r );
-    return $r;
+    $n = self::norm( $d );
+    logger::debug( module_name, 'vec :: distance return: ' . $n );
+    return $n;
   }
   
 }
