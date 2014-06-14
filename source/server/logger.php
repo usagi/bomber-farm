@@ -1,11 +1,25 @@
 <?php namespace wonder_rabbit_project\logger;
 
+const module_name = 'wonder_rabbit_project::logger';
+
 final class logger
 {
-  static private $_log   = [];
-  static private $_level = 0;
+  static private $_level = 5;
   static private $_tee   = true;
+  static private $_file  = null;
+  static private $_file_append_time = true;
+  static private $_file_extension = '.log';
   static private $_exclude_modules = [];
+  
+  static public function at_exit()
+  {
+    self::debug( module_name, __FUNCTION__ );
+    if ( self::$_file )
+    {
+      self::debug( module_name, __FUNCTION__ . ' close file' . self::$_file );
+      fclose( self::$_file );
+    }
+  }
   
   static private function exception_if_not_string( $value )
   {
@@ -13,8 +27,16 @@ final class logger
       throw new InvalidArgumentException( $value . ' is not string.' );
   }
   
+  static private function exception_if_not_bool( $value )
+  {
+    if ( ! is_bool( $value ) )
+      throw new InvalidArgumentException( $value . ' is not bool.' );
+  }
+  
   static public function push_exclude_module( $module )
   {
+    self::debug( module_name, __FUNCTION__ . '( ' . $module . ' )' );
+    
     self::exception_if_not_string( $module );
     
     if ( in_array( $module, self::$_exclude_modules ) )
@@ -25,6 +47,8 @@ final class logger
   
   static public function remove_exclude_module( $module )
   {
+    self::debug( module_name, __FUNCTION__ . '( ' . $module . ' )' );
+    
     self::exception_if_not_string( $module );
     
     if ( ! in_array( $module, self::$_exclude_modules ) )
@@ -33,16 +57,57 @@ final class logger
     self::$_exclude_modules = array_values( array_diff( self::$_exclude_modules, [ $module ] ) );
   }
   
+  static public function file_append_time( $enable )
+  {
+    self::debug( module_name, __FUNCTION__ . '( ' . $enable . ' )' );
+    
+    self::exception_if_not_bool( $enable );
+    self::$_file_append_time = $enable;
+  }
+  
+  static public function file_extension( $extension )
+  {
+    self::debug( module_name, __FUNCTION__ . '( ' . $extension . ' )' );
+    
+    self::exception_if_not_string( $extension );
+    self::$_file_extension = $extension;
+  }
+  
+  static public function file( $filename )
+  {
+    self::debug( module_name, __FUNCTION__ . '( ' . $filename . ' )' );
+    
+    self::exception_if_not_string( $filename );
+    
+    if ( self::$_file )
+      fclose( self::$_file );
+    
+    $f = $filename;
+    if ( self::$_file_append_time )
+      $f .= time();
+    if ( self::$_file_extension )
+      $f .= self::$_file_extension;
+    
+    self::$_file = fopen( $f, 'a');
+    
+    if ( ! self::$_file )
+      throw RuntimeException( 'file( ' . $f . ' ) could not opened.' );
+    
+    register_shutdown_function( function(){ logger::at_exit(); } );
+  }
+  
   static public function tee( $enable )
   {
-    if ( ! is_bool( $enable ) )
-      throw new InvalidArgumentException( $enable . ' is not bool.' );
-      
+    self::debug( module_name, __FUNCTION__ . '( ' . $enable . ' )' );
+    
+    self::exception_if_not_bool( $enable );
     self::$_tee = $enable;
   }
 
   static public function level( $value )
   {
+    self::debug( module_name, __FUNCTION__ . '( ' . $value . ' )' );
+    
     if ( is_string( $value ) )
       $value = strtolower( $value );
     else if ( ! is_int( $value ) )
@@ -97,18 +162,17 @@ final class logger
     if ( self::$_level < $level || in_array( $module, self::$_exclude_modules ) )
       return;
       
-    $log = [ time(), $level, (string)( $module ), (string)( $message ) ];
+    $out = date( 'c', time() ) . "\t"
+         . str_pad( self::level_to_string( $level ), 5 ) . "\t"
+         . $module . "\t"
+         . $message . PHP_EOL
+         ;
+    
+    if ( self::$_file )
+      fwrite( self::$_file, $out );
     
     if ( self::$_tee )
-      fputs
-        ( STDERR
-        , date( 'c', $log[0]) . "\t"
-        . str_pad( self::level_to_string( $log[1] ), 5 ) . "\t"
-        . $log[2] . "\t"
-        . $log[3] . PHP_EOL
-        );
-    
-    array_push( self::$_log, $log );
+      fputs( STDERR, $out );
     
     if ( $level == 1 )
       throw new \Exception( 'fatal error. for detail to see the last message of STRERR.' );

@@ -11,7 +11,7 @@ class vec
   
   public function __construct( $x = null, $y = null, $z = null, $w =null )
   {
-    logger::debug( module_name, "vec -> __construct( $x, $y, $z, $w )" );
+    logger::debug( module_name, __FUNCTION__ . "( $x, $y, $z, $w )" );
     switch( false )
     {
       case is_null( $w ): $this -> w = $w;
@@ -27,7 +27,7 @@ class vec
   
   private function property_name_to_index( $property_name )
   {
-    logger::debug( module_name, 'vec -> property_name_to_index( ' . $property_name . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $property_name . ' )' );
     switch ( $property_name )
     {
     case 'x':
@@ -39,7 +39,7 @@ class vec
       if ( $index < 0 || $index > 3 )
         throw new \invalidargumentexception( 'unsupported char code platform. index = ' . $index . ' from ' . $property_name );
       
-      logger::debug( module_name, 'vec -> property_name_to_index return: ' . $index );
+      logger::debug( module_name, __FUNCTION__ . ' return: ' . $index );
       return $index;
     }
     
@@ -48,20 +48,20 @@ class vec
   
   private function exception_if_not_numeric( $v )
   {
-    logger::debug( module_name, 'vec -> exception_if_not_numeric( ' . $v . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $v . ' )' );
     if ( ! is_numeric( $v ) )
       throw new invalidargumentexception( 'require numeric type. typeof $v is: ' . gettype( $v ) );
   }
   
   public function __get( $key )
   {
-    logger::debug( module_name, 'vec -> __get( ' . $key . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $key . ' )' );
     return $this -> _values[ $this -> property_name_to_index( $key ) ];
   }
   
   public function __set( $key, $value )
   {
-    logger::debug( module_name, 'vec -> __set( ' . $key . ', ' . $value .' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $key . ', ' . $value .' )' );
     $this -> exception_if_not_numeric( $value );
     $this -> _values[ $this -> property_name_to_index( $key ) ] = $value;
     return $this;
@@ -70,29 +70,29 @@ class vec
   public function size()
   {
     $r = count( $this -> _values );
-    logger::debug( module_name, 'vec -> size return: ' . $r );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $r );
     return $r;
   }
   
   static public function exception_if_not_vec( $v )
   {
-    logger::debug( module_name, 'vec :: exception_if_not_vec( ' . $v . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $v . ' )' );
     if ( ! $v instanceof vec )
       throw new InvalidArgumentException( 'require vec type. typeof $v is: ' . gettype( $v ) );
   }
   
   static public function warn_if_dimension_not_eq( $a, $b )
   {
-    logger::debug( module_name, 'vec :: warn_if_dimension_not_eq( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     $r = $b -> size() - $a -> size();
     if ( $r !== 0 )
-      logger::warn( module_name, 'vec :: warn_if_dimension_not_eq( ' . "$a, $b" . ' ): dimension is not equals.' );
+      logger::warn( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' ): dimension is not equals.' );
     return $r;
   }
   
   static private function test_binary_operation_parameter( $a, $b )
   {
-    logger::debug( module_name , 'vec :: test_binary_operation_parameter( ' . "$a, $b" . ' )' );
+    logger::debug( module_name , __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::exception_if_not_vec( $a );
     self::exception_if_not_vec( $b );
     $d = self::warn_if_dimension_not_eq( $a, $b );
@@ -100,62 +100,62 @@ class vec
   
   static public function add( $a, $b )
   {
-    logger::debug( module_name, 'vec :: add( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $r = new vec;
     $r -> _values = array_map( function( $a, $b ){ return $a + $b; }, $a -> _values, $b -> _values );
-    logger::debug( module_name, 'vec :: add return: ' . $r );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $r );
     return $r;
   }
   
   static public function sub( $a, $b )
   {
-    logger::debug( module_name, 'vec :: sub( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $r = new vec;
     $r -> _values = array_map( function( $a, $b ){ return $a - $b; }, $a -> _values, $b -> _values );
-    logger::debug( module_name, 'vec :: sub return: ' . $r );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $r );
     return $r;
   }
   
   static public function mul( $a, $b )
   {
-    logger::debug( module_name, 'vec :: mul( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $r = new vec;
     $r -> _values = array_map( function( $a, $b ){ return $a * $b; }, $a -> _values, $b -> _values );
-    logger::debug( module_name, 'vec :: mul return: ' . $r );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $r );
     return $r;
   }
   
   static public function div( $a, $b )
   {
-    logger::debug( module_name, 'vec :: div( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $r = new vec;
     $r -> _values = array_map( function( $a, $b ){ return $a / $b; }, $a -> _values, $b -> _values );
-    logger::debug( module_name, 'vec :: div return: ' . $r );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $r );
     return $r;
   }
   
   static public function norm( $v )
   {
-    logger::debug( module_name, 'vec :: norm( ' . $v . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . $v . ' )' );
     self::exception_if_not_vec( $v );
     $s = array_map( function( $v ){ return $v * $v; }, $v -> _values );
     $r = array_reduce( $s, function( $a, $v ){ return $a + $v; } );
     $n = sqrt( $r );
-    logger::debug( module_name, 'vec :: add return: ' . $n );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $n );
     return $n;
   }
   
   static public function distance( $a, $b )
   {
-    logger::debug( module_name, 'vec :: distance( ' . "$a, $b" . ' )' );
+    logger::debug( module_name, __FUNCTION__ . '( ' . "$a, $b" . ' )' );
     self::test_binary_operation_parameter( $a, $b );
     $d = self::sub( $a, $b );
     $n = self::norm( $d );
-    logger::debug( module_name, 'vec :: distance return: ' . $n );
+    logger::debug( module_name, __FUNCTION__ . ' return: ' . $n );
     return $n;
   }
   
