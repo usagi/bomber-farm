@@ -26,7 +26,8 @@ final class configuration
 {
   public __construct( $json = null )
   {
-    
+    if ( ! is_null( $json ) )
+      json_deserialize( $json )
   }
   
   private json_deserialize( $json )
