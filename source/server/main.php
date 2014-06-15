@@ -22,33 +22,36 @@ interface default_construct_parameters
 }
 
 final class system_configuration
-  implements JsonSerializable
+  implements \JsonSerializable
 {
-  public __construct( $json = null )
+  public function __construct( $json = null )
   {
     if ( ! is_null( $json ) )
-      json_deserialize( $json )
+      json_deserialize( $json );
   }
   
-  private json_deserialize( $json )
+  private function json_deserialize( $json )
   {
     
   }
   
-  private json_serialize()
+  private function json_serialize()
   {
     
   }
   
-  public jsonSerialize()
+  public function jsonSerialize()
   { return $this -> json_serialize(); }
 }
 
 final class main
   implements default_construct_parameters
 {
-  private $_is_continue = false;
-  private $_configuration = null;
+  private $_is_continue       = false;
+  private $_configuration     = null;
+  
+  private $_before_time_in_us =  0.0;
+  private $_clock_in_hz       = 30.0;
   
   public function __construct( $construct_parameters = null )
   {
@@ -67,6 +70,8 @@ final class main
     logger::debug( module_name, __FUNCTION__ . ' loop in' );
     
     $this -> _is_continue = true;
+    
+    $this -> save_before_time();
     
     while( $this -> _is_continue )
       $this -> step();
@@ -89,8 +94,41 @@ final class main
   private function step()
   {
     logger::debug( module_name, __FUNCTION__ );
+    
+    $this -> update();
+    $this -> process_commands();
+    $this -> adjust_game_clock();
+    
     $this -> _is_continue = false;
   }
+  
+  private function update()
+  {
+    logger::debug( module_name, __FUNCTION__ );
+  }
+  
+  private function process_commands()
+  {
+    logger::debug( module_name, __FUNCTION__ );
+  }
+  
+  private function adjust_game_clock()
+  {
+    logger::debug( module_name, __FUNCTION__ );
+    
+    $delta_time_in_us = microtime( true ) - $this -> _before_time_in_us;
+    
+    $wait = 1.0e+6 / $this -> _clock_in_hz - $delta_time_in_us;
+    
+    logger::debug( module_name, __FUNCTION__ . ' sleep ' . sprintf( '%.3f', $wait * 1.0e-3 ) . ' [ms]' );
+    usleep( $wait );
+    $this -> save_before_time();
+    logger::debug( module_name, __FUNCTION__ . ' awake' );
+  }
+  
+  private function save_before_time()
+  { $this -> _before_time_in_us = microtime( true ); }
+  
 }
 
 main();
