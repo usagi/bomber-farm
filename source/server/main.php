@@ -21,7 +21,7 @@ interface default_construct_parameters
   const pdo_options  = null;
 }
 
-final class configuration
+final class system_configuration
   implements JsonSerializable
 {
   public __construct( $json = null )
