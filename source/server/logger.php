@@ -21,6 +21,9 @@ final class logger
     }
   }
   
+  static public function array_to_string( $a )
+  { return str_replace( [ "\r\n", "\r", "\n" ], '', var_export( $a, true ) ); }
+  
   static private function exception_if_not_string( $value )
   {
     if ( ! is_string( $value ) )

@@ -6,11 +6,90 @@ require_once( 'initialize.php' );
 use \wonder_rabbit_project\logger\logger;
 use \wonder_rabbit_project\math\vec;
 
-$a = new vec( 3, 4 );
-$b = new vec( 1, 2 );
+function main()
+{
+  global $argv;
+  $main = new main( $argv );
+  $main -> run();
+}
 
-logger::info( module_name, 'norm( $a ): ' . vec::norm( $a ) );
-logger::info( module_name, 'norm( $b ): ' . vec::norm( $b ) );
-logger::info( module_name, 'distance( $a, $b ): ' . vec::distance( $a, $b ) );
+interface default_construct_parameters
+{
+  const pdo_dsn      = 'sqlite:bomber-farm.sqlite3';
+  const pdo_user     = null;
+  const pdo_password = null;
+  const pdo_options  = null;
+}
 
-//logger::fatal( module_name, 'fatal testing' );
+final class configuration
+  implements JsonSerializable
+{
+  public __construct( $json = null )
+  {
+    
+  }
+  
+  private json_deserialize( $json )
+  {
+    
+  }
+  
+  private json_serialize()
+  {
+    
+  }
+  
+  public jsonSerialize()
+  { return $this -> json_serialize(); }
+}
+
+final class main
+  implements default_construct_parameters
+{
+  private $_is_continue = false;
+  private $_configuration = null;
+  
+  public function __construct( $construct_parameters = null )
+  {
+    $pdo_parameters =
+      [ 'dsn'      => isset( $construct_parameters['dsn'     ] ) ? $construct_parameters['dsn'     ] : self::pdo_dsn
+      , 'user'     => isset( $construct_parameters['user'    ] ) ? $construct_parameters['user'    ] : self::pdo_user
+      , 'password' => isset( $construct_parameters['password'] ) ? $construct_parameters['password'] : self::pdo_password
+      , 'options'  => isset( $construct_parameters['options' ] ) ? $construct_parameters['options' ] : self::pdo_options
+      ];
+    $this -> connect_database( $pdo_parameters );
+    $this -> load_configuration();
+  }
+  
+  public function run()
+  {
+    logger::debug( module_name, __FUNCTION__ . ' loop in' );
+    
+    $this -> _is_continue = true;
+    
+    while( $this -> _is_continue )
+      $this -> step();
+    
+    logger::debug( module_name, __FUNCTION__ . ' loop out' );
+  }
+  
+  private function connect_database( $pdo_parameters )
+  {
+    logger::debug( module_name, __FUNCTION__ . '( ' . logger::array_to_string( $pdo_parameters ) . ')' );
+    
+  }
+  
+  private function load_configuration()
+  {
+    logger::debug( module_name, __FUNCTION__ );
+    
+  }
+  
+  private function step()
+  {
+    logger::debug( module_name, __FUNCTION__ );
+    $this -> _is_continue = false;
+  }
+}
+
+main();
