@@ -10,6 +10,13 @@ final class logger
   static private $_file_append_time = true;
   static private $_file_extension = '.log';
   static private $_exclude_modules = [];
+  static private $_base_time_in_us = 0.0;
+  
+  static public function save_base_time()
+  {
+    self::$_base_time_in_us = microtime( true );
+    self::debug( module_name, __FUNCTION__ . ' base_time: ' . sprintf( '%.6f', self::$_base_time_in_us ) . ' [s( from epoch )]' );
+  }
   
   static public function at_exit()
   {
@@ -164,8 +171,10 @@ final class logger
   {
     if ( self::$_level < $level || in_array( $module, self::$_exclude_modules ) )
       return;
-      
-    $out = date( 'c', time() ) . "\t"
+    
+    $t = sprintf( '%.6f', microtime( true ) - self::$_base_time_in_us );
+    
+    $out = $t . "\t"
          . str_pad( self::level_to_string( $level ), 5 ) . "\t"
          . $module . "\t"
          . $message . PHP_EOL
